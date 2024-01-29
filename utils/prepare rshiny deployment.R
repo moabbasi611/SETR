@@ -1,6 +1,6 @@
 ## Install NCODA or other packages from moabbasi611 github repos
 devtools::install_github("moabbasi611/SETR",
-                         ref="main",
+                         ref="master",
                          auth_token = "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")
 
 

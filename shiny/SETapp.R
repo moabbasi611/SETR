@@ -18,10 +18,10 @@ library(rintrojs)
 library(reactable)
 library(shiny)
 library(data.table)
-library("SET-R")
+library(SETR)
 
 # Load Data ---------------------------------------------------------------
-dt_app <- `SET-R`::Cancer_rates_dt
+dt_app <- SETR::Cancer_rates_dt
 dt_app <- fread(file.path(path,"Cancer_rate_Dem_sex_age_county_data.csv"))
 # setnames(dt_app,
 #          old = "Age-Adjusted Incidence Rate([rate note]) - cases per 100,000",
