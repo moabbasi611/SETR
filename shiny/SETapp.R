@@ -22,23 +22,8 @@ library(SETR)
 
 # Load Data ---------------------------------------------------------------
 dt_app <- SETR::Cancer_rates_dt
-dt_app <- fread(file.path(path,"Cancer_rate_Dem_sex_age_county_data.csv"))
-# setnames(dt_app,
-#          old = "Age-Adjusted Incidence Rate([rate note]) - cases per 100,000",
-#          new = "Age-Adjusted Incidence Rate - cases per 100,000")
-#
-# dt_app[,State := limma::strsplit2(dt_app$County,"[,]")[,2]]
-# dt_app[,State := gsub("[(6)]","",State)]
-# dt_app[,State := gsub("[(7)]","",State)]
-# dt_app[,State := gsub("^ ","",State)]
-# dt_app <- dt_app[State != ""]
+#dt_app <- fread(file.path(path,"Cancer_rate_Dem_sex_age_county_data.csv"))
 
-#dt_app_short <- dt_app[,.(County,FIPS,`Age-Adjusted Incidence Rate - cases per 100,000`,`Average Annual Count`,)]
-# Cancers_dt <- dcast(dt_app,formula = County ~ Cancer,
-#                     value.var = "Age-Adjusted Incidence Rate([rate note]) - cases per 100,000",
-#                     #fun.aggregate = mean
-#                     )
-# Cancers_dt <- data.frame(Cancers_dt[,-1])
 
 Cancers_dt <- t(unique(dt_app$Cancer))
 colnames(Cancers_dt) <- Cancers_dt
