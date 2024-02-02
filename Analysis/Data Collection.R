@@ -42,8 +42,12 @@ dt[,State := gsub("[(7)]","",State)]
 dt[,State := gsub("^ ","",State)]
 dt <- dt[State != ""]
 
+dt[,`Age-Adjusted Incidence Rate - cases per 100,000` := as.numeric(`Age-Adjusted Incidence Rate - cases per 100,000`)]
+dt[,`Average Annual Count` := as.numeric(`Average Annual Count`)]
+
+
 path <- "/Users//mohammadabassi/Documents/SET"
-fwrite(dt,file.path(path,"Cancer_rate_Dem_sex_age_county_data.csv"))
+fwrite(dt,file.path(path,"Cancer_rate_Dem_sex_age_county_data_012924.csv"))
 
 Cancer_rates_dt <- dt
 usethis::use_data(Cancer_rates_dt, overwrite = T)

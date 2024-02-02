@@ -38,13 +38,15 @@ states <- c("All States",states)
 States_dt <- t(unique(states))
 colnames(States_dt) <- States_dt
 
+measures_dt <- t(c("Average Annual Count","Age-Adjusted Incidence Rate - cases per 100,000"))
+colnames(measures_dt) <- measures_dt
 # Shiny UI ----------------------------------------------------------------
 
 
 
-ui <- dashboardPage(skin = "red",
+ui <- dashboardPage(skin = "blue",
 
-                    dashboardHeader(title = "A UI for selecting high cancer rate regions"),
+                    dashboardHeader(title = "SET County Selection App"),
                     dashboardSidebar(width =350,
                                      sidebarMenu(
                                        introjsUI(),
@@ -75,6 +77,11 @@ ui <- dashboardPage(skin = "red",
                                                                multiple = FALSE,
                                                                width = "400px",
                                                                data =Cancers_dt),
+                                                varSelectInput(inputId = "var",
+                                                               multiple = FALSE,
+                                                               label = "Ranking Variable",
+                                                               data = measures_dt,
+                                                               width = "400px"),
                                                 shiny::textAreaInput(inputId = "num_rows",
                                                                      value = 10,
                                                                      width = "160px",
@@ -137,16 +144,20 @@ server <- function(input, output, session) {
       Sx <- paste(input$sex)
       rows <- as.character(paste(input$num_rows))
       St <- paste(input$state)
+      v <- paste(input$var)
+      i <-   which(colnames(dt_app) == v)
       ## Error messages for Female and Male only cancers
 
     if(St == "All States") {
-      dt_out <- dt_app[Demographic == Dem & Cancer == Canc & Sex == Sx][order(`Age-Adjusted Incidence Rate - cases per 100,000`, decreasing = TRUE)][1:rows,]
+      dt_out <<- dt_app[Demographic == Dem & Cancer == Canc & Sex == Sx]
+      dt_out <<- dt_out[order(dt_out[,i,with = FALSE], decreasing = TRUE)][1:rows,]
 
     } else{
-      dt_out <- dt_app[State == St & Demographic == Dem & Cancer == Canc & Sex == Sx][order(`Age-Adjusted Incidence Rate - cases per 100,000`, decreasing = TRUE)][1:rows,]
+      dt_out <<- dt_app[State == St & Demographic == Dem & Cancer == Canc & Sex == Sx]
+      dt_out <<- dt_out[order(dt_out[,i,with = FALSE], decreasing = TRUE)][1:rows,]
 
     }
-
+    dt_out <<- dt_out[,-c(6:8)]
 
 
     if(Sx == "Female" & Canc %in% c("Prostate") |
