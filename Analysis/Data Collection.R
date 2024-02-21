@@ -46,6 +46,13 @@ dt[,`Age-Adjusted Incidence Rate - cases per 100,000` := as.numeric(`Age-Adjuste
 dt[,`Average Annual Count` := as.numeric(`Average Annual Count`)]
 
 
+# updated cancer names
+dt[Cancer == "Lung", Cancer := "Lung & Bronchus"]
+dt[Cancer == "Colon", Cancer := "Colon & Rectal"]
+dt[Cancer == "Breast", Cancer := "Breast (Female)"]
+
+
+
 path <- "/Users//mohammadabassi/Documents/SET"
 fwrite(dt,file.path(path,"Cancer_rate_Dem_sex_age_county_data_012924.csv"))
 
@@ -63,7 +70,6 @@ usethis::use_data(Cancer_rates_dt, overwrite = T)
 # 8:     Adams County, Iowa(7)
 # 9: Adams County, Nebraska(6)
 # 10:     Adams County, Ohio(6)
-dt[Demographic == "Black Non-Hispanic" & Cancer == "Breast"][order(`Age-Adjusted Incidence Rate([rate note]) - cases per 100,000`)][1:10,1]
 
 
 

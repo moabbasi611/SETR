@@ -1,7 +1,7 @@
 ## Install SETR or other packages from moabbasi611 github repos
 devtools::install_github("moabbasi611/SETR",
                          ref="master",
-                         auth_token = "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", force =T)
+                         auth_token = "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", force =T,)
 
 
 ## Rscript for deploying shiny app.

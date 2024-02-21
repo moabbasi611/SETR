@@ -33,6 +33,7 @@ Sex_dt <- t(unique(dt_app$Sex))
 colnames(Sex_dt) <- Sex_dt
 
 states <- unique(dt_app$State)
+states <- states[order(states)]
 states <- c("All States",states)
 
 States_dt <- t(unique(states))

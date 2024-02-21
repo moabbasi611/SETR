@@ -5,7 +5,7 @@ account: betterdatascience
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 11070484
-bundleId: 8197567
+bundleId: 8209289
 url: https://betterdatascience.shinyapps.io/SETCountySelectionApp/
 version: 1
 asMultiple: FALSE
