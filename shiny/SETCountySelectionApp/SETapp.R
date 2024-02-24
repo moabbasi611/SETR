@@ -75,7 +75,7 @@ ui <- dashboardPage(skin = "blue",
                                                                 width = "400px"),
                                                 varSelectInput(inputId = "cancer",
                                                                label = "Cancer",
-                                                               multiple = FALSE,
+                                                               multiple = TRUE,
                                                                width = "400px",
                                                                data =Cancers_dt),
                                                 varSelectInput(inputId = "var",
@@ -141,35 +141,69 @@ server <- function(input, output, session) {
   # Make the map
   observeEvent(input$run, {
       Dem <- paste(input$dem)
-      Canc <- paste(input$cancer)
+      #Canc <- paste(input$cancer)
+      Canc <<- gsub("\`","",as.character(input$cancer))
       Sx <- paste(input$sex)
       rows <- as.character(paste(input$num_rows))
       St <- paste(input$state)
       v <- paste(input$var)
-      i <-   which(colnames(dt_app) == v)
-      ## Error messages for Female and Male only cancers
-
-    if(St == "All States") {
-      dt_out <<- dt_app[Demographic == Dem & Cancer == Canc & Sex == Sx]
-      dt_out <<- dt_out[order(dt_out[,i,with = FALSE], decreasing = TRUE)][1:rows,]
-
-    } else{
-      dt_out <<- dt_app[State == St & Demographic == Dem & Cancer == Canc & Sex == Sx]
-      dt_out <<- dt_out[order(dt_out[,i,with = FALSE], decreasing = TRUE)][1:rows,]
-
-    }
-    dt_out <<- dt_out[,-c(6:8)]
 
 
-    if(Sx == "Female" & Canc %in% c("Prostate") |
-       Sx == "Male" & Canc %in% c("Breast","Ovary")){
-      output$err_msg <- renderText(paste("Please enter correct Sex and Cancer combination"))
+      # output$err_msg <- renderText(limma:strsplit2(Canc,","))
+      # output$err_msg <- renderText(length(Canc))
 
-    }
+      if(length(Canc) == 1){
+        dt_out1 <- dt_app[Cancer %in% Canc]
+        dt_out1 <- dt_out1[,-c(6:8)]
+        i <-   which(colnames(dt_out1) == v)
+      }
 
-    output$table <- renderReactable({
-      reactable(dt_out)
-    })
+      if(length(Canc) > 1){
+        dt_out1 <- dt_app[Cancer %in% Canc]
+        dt_out1[,unique_id := paste(County,FIPS,Years,Demographic,Sex,Age,sep="_")]
+
+        # use only counties with information for all cancers
+        temp <- dt_out1[Cancer == Canc[1]]$unique_id
+        for(i in 2:length(Canc)){
+          out <- dt_out1[Cancer == Canc[i]]$unique_id
+          out <- out[out %in% temp]
+          temp <- out
+        }
+        dt_out1 <- dt_out1[unique_id %in% out]
+
+        # merge the important variables between the cancers
+        dt_out1 <- dt_out1[,.(`Average Annual Count` = sum(`Average Annual Count`),
+                              `Age-Adjusted Incidence Rate - cases per 100,000` = round(mean(`Age-Adjusted Incidence Rate - cases per 100,000`),digits = 2)),
+                          .(County,FIPS,Years,Demographic,State,Sex,Age)]      ## Error messages for Female and Male only cancers
+        dt_out1[,Cancer := paste(Canc,collapse = ',')]
+        i <-   which(colnames(dt_out1) == v)
+        }
+
+      if(St == "All States") {
+        #dt_out <<- dt_out1[Demographic == Dem & Cancer == Canc & Sex == Sx]
+        dt_out <<- dt_out1[Demographic == Dem &  Sex == Sx]
+        dt_out <<- dt_out[order(dt_out[,i,with = FALSE], decreasing = TRUE)][1:rows,]
+
+      } else{
+        #dt_out <<- dt_app[State == St & Demographic == Dem & Cancer == Canc & Sex == Sx]
+        dt_out <<- dt_out1[State == St & Demographic == Dem & Sex == Sx]
+        dt_out <<- dt_out[order(dt_out[,i,with = FALSE], decreasing = TRUE)][1:rows,]
+
+      }
+      #
+
+
+
+      if(Sx == "Female" & "Prostate" %in% Canc |
+         Sx == "Male" & "Breast (Female)" %in% Canc |
+         Sx == "Male" & "Ovary" %in% Canc){
+        output$err_msg <- renderText(paste("Please enter correct Sex and Cancer combination"))
+
+      }
+
+      output$table <- renderReactable({
+        reactable(dt_out)
+      })
 
     # counties <- get_urbn_map(map = input$map_type, sf = TRUE)
     # dt_labels <- get_urbn_labels(map = input$map_type)
